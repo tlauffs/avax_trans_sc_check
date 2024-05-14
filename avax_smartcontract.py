@@ -1,4 +1,3 @@
-import binascii
 from web3 import Web3, HTTPProvider
 from web3.middleware import geth_poa_middleware
 from tqdm import tqdm
