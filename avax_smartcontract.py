@@ -8,14 +8,14 @@ def connect():
     return avax_c_w3
 
 
-def getTransactionInput(transaction): 
+def getTransactionInput(transaction, search_input): 
     transaction = avax_c_w3.eth.get_transaction(transaction)
     transaction_input_data = transaction['input']
-    if b'SMOKLM' in transaction_input_data: 
+    if search_input in transaction_input_data: 
         return True
     return False
 
-def getTransactionsSC(contract_address, start_block, end_block, chunk_size=2048):
+def getTransactionsSC(contract_address, start_block, end_block, search_input, chunk_size=2048):
     transaction_counter = 0
     transaction_hashes = []
     try:
@@ -28,7 +28,7 @@ def getTransactionsSC(contract_address, start_block, end_block, chunk_size=2048)
                     "address": contract_address
                 })
                 for transaction in transactions:
-                    if getTransactionInput(transaction.transactionHash.hex()):
+                    if getTransactionInput(transaction.transactionHash.hex(), search_input):
                         transaction_hashes.append(transaction.transactionHash.hex())
                         transaction_counter += 1
                 start_block += chunk_size
@@ -40,10 +40,10 @@ def getTransactionsSC(contract_address, start_block, end_block, chunk_size=2048)
 avax_c_w3 = connect()
 start_block = 44900000
 end_block = avax_c_w3.eth.block_number
-step = 2048
 contract_address = "0x215B2ae1E51A43f360901425Edf0e4fDDb30CA80"
+search_input = b'SMOKLM'
 
-print(f'Getting transaction_hashes with SMOKLM in input: for contract {contract_address} : starting form block : {44900000} untit block {end_block}')
-transaction_hashes, transaction_counter =  getTransactionsSC(contract_address, start_block, end_block)
-print('transaction_hashes with SMOKLM in input: ', transaction_counter)
-print('amount of transactions with SMOKLM in input:  ', transaction_hashes)
+print(f'Getting transaction_hashes with {search_input} in input | For contract : {contract_address} | starting block : {44900000} | end block : {end_block}')
+transaction_hashes, transaction_counter =  getTransactionsSC(contract_address, start_block, end_block, search_input)
+print('transaction_hashes: ', transaction_counter)
+print('Amount of transactions:  ', transaction_hashes)
